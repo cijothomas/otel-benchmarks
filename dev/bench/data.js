@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779861315912,
+  "lastUpdate": 1779862855521,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -88,6 +88,35 @@ window.BENCHMARK_DATA = {
             "value": 0.9911568124911615,
             "unit": "ns",
             "range": "± 0.005129789471392988"
+          }
+        ]
+      }
+    ],
+    "rust / S1 (opentelemetry 0.32.0)": [
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "204a4a25932762dc859f8c77160eb2d25d839a2c",
+          "message": "Add Rust harness for Scenario S1",
+          "timestamp": "2026-05-27T06:19:20Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/204a4a25932762dc859f8c77160eb2d25d839a2c"
+        },
+        "date": 1779862855008,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "s1_counter_add",
+            "value": 1.76464344,
+            "unit": "ns"
           }
         ]
       }
