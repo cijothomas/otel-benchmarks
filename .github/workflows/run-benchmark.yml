@@ -1,0 +1,59 @@
+name: run-benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: 'Language harness to run'
+        required: true
+        type: choice
+        default: dotnet
+        options:
+          - dotnet
+      version:
+        description: 'Package version to measure (e.g. 10.0.8 for System.Diagnostics.DiagnosticSource)'
+        required: true
+        type: string
+        default: '10.0.8'
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  dotnet:
+    if: inputs.language == 'dotnet'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run BenchmarkDotNet
+        working-directory: harnesses/dotnet/OtelBenchmarks.Dotnet
+        run: |
+          dotnet run -c Release \
+            -p:SystemDiagnosticsDiagnosticSourceVersion=${{ inputs.version }} \
+            -- --exporters json --filter '*'
+
+      - name: Locate report
+        id: locate
+        working-directory: harnesses/dotnet/OtelBenchmarks.Dotnet
+        run: |
+          report=$(ls BenchmarkDotNet.Artifacts/results/*-report-full-compressed.json | head -n1)
+          echo "report=$report" >> "$GITHUB_OUTPUT"
+          echo "Found report: $report"
+
+      - name: Publish to dashboard
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: 'dotnet / S1 (System.Diagnostics.DiagnosticSource ${{ inputs.version }})'
+          tool: 'benchmarkdotnet'
+          output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/${{ steps.locate.outputs.report }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: 'dev/bench'

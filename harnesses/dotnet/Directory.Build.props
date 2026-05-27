@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <SystemDiagnosticsDiagnosticSourceVersion Condition="'$(SystemDiagnosticsDiagnosticSourceVersion)' == ''">10.0.8</SystemDiagnosticsDiagnosticSourceVersion>
+  </PropertyGroup>
+</Project>
