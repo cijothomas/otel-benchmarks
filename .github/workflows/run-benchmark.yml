@@ -81,6 +81,9 @@ jobs:
           ./target/release/otel-rust-bench > result.json
           cat result.json
 
+      - name: Restore Cargo.toml
+        run: git checkout -- harnesses/rust/Cargo.toml
+
       - name: Publish to dashboard
         uses: benchmark-action/github-action-benchmark@v1
         with:
