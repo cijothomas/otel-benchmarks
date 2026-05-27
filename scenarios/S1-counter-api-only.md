@@ -8,7 +8,10 @@ Mirrors Scenario S1 in
 - Depends only on the OTel API package; no SDK package is referenced
   or loaded.
 - The benchmark increments a `Counter` instrument by 1 in a tight
-  loop with the same attribute set on every call. The attribute set
+  loop. Each call constructs and passes the same attribute set
+  inline (no hoisting/caching of an attribute container across
+  iterations) — this matches how application code typically issues
+  measurements with per-request attribute values. The attribute set
   is these three string attributes:
   - `http.request.method` = `"GET"`
   - `url.scheme` = `"https"`

@@ -4,14 +4,18 @@ use opentelemetry::{global, KeyValue};
 fn s1_counter_add(c: &mut Criterion) {
     let meter = global::meter("otel-benchmarks");
     let counter = meter.u64_counter("requests").build();
-    let attrs = [
-        KeyValue::new("http.request.method", "GET"),
-        KeyValue::new("url.scheme", "https"),
-        KeyValue::new("server.address", "example.com"),
-    ];
 
     c.bench_function("s1_counter_add", |b| {
-        b.iter(|| counter.add(1, &attrs));
+        b.iter(|| {
+            counter.add(
+                1,
+                &[
+                    KeyValue::new("http.request.method", "GET"),
+                    KeyValue::new("url.scheme", "https"),
+                    KeyValue::new("server.address", "example.com"),
+                ],
+            );
+        });
     });
 }
 

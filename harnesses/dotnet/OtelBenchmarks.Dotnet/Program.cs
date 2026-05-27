@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Exporters.Json;
@@ -13,15 +12,12 @@ public class S1CounterApiOnly
     private static readonly Meter Meter = new("otel-benchmarks.s1");
     private static readonly Counter<long> Counter = Meter.CreateCounter<long>("requests");
 
-    private static readonly TagList Tags = new()
-    {
-        { "http.request.method", "GET" },
-        { "url.scheme", "https" },
-        { "server.address", "example.com" },
-    };
-
     [Benchmark]
-    public void CounterAdd() => Counter.Add(1, Tags);
+    public void CounterAdd() => Counter.Add(
+        1,
+        new KeyValuePair<string, object?>("http.request.method", "GET"),
+        new KeyValuePair<string, object?>("url.scheme", "https"),
+        new KeyValuePair<string, object?>("server.address", "example.com"));
 }
 
 public static class Program
