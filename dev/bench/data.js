@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779899138179,
+  "lastUpdate": 1779899141154,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -743,6 +743,42 @@ window.BENCHMARK_DATA = {
             "range": "1.3384483991449059",
             "unit": "ns",
             "extra": "runner=ubuntu24\nruntime=openjdk version 17.0.19 2026-04-21\ncpu=AMD EPYC 7763 64-Core Processor\nkernel=6.17.0-1013-azure\nframework=JMH"
+          }
+        ]
+      }
+    ],
+    "dotnet / S1b (System.Diagnostics.DiagnosticSource 10.0.8)": [
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "bbf16ca23c9feac7381757c1662af93abb0bad5a",
+          "message": "Add Scenario S1b: counter add guarded by IsEnabled (.NET only)",
+          "timestamp": "2026-05-27T16:23:26Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/bbf16ca23c9feac7381757c1662af93abb0bad5a"
+        },
+        "date": 1779899140840,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "s1b_counter_add_guarded",
+            "value": 0.021703600883483887,
+            "unit": "ns",
+            "extra": "runner=ubuntu24\nruntime=.NET 10.0.300\ncpu=AMD EPYC 9V74 80-Core Processor\nkernel=6.17.0-1015-azure\nframework=BenchmarkDotNet 0.14.0"
+          },
+          {
+            "name": "s1b_counter_add_guarded allocations",
+            "value": 0,
+            "unit": "B/op",
+            "extra": "runner=ubuntu24\nruntime=.NET 10.0.300\ncpu=AMD EPYC 9V74 80-Core Processor\nkernel=6.17.0-1015-azure\nframework=BenchmarkDotNet 0.14.0"
           }
         ]
       }
