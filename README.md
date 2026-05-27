@@ -17,8 +17,10 @@ a personal account and is **not** an official OpenTelemetry project.
 
 ## Live dashboard
 
-Trend dashboard:
-<https://cijothomas.github.io/otel-benchmarks/dev/bench/>
+- Release-over-release (version on X axis):
+  <https://cijothomas.github.io/otel-benchmarks/dev/bench/by-version.html>
+- Commit-indexed (the default `github-action-benchmark` view):
+  <https://cijothomas.github.io/otel-benchmarks/dev/bench/>
 
 Current data: three points for Scenario S1 against
 `System.Diagnostics.DiagnosticSource` versions `10.0.8`, `9.0.16`,
@@ -37,14 +39,13 @@ heap allocations.
 
 ## Known prototype limitations / open design questions
 
-- `benchmark-action/github-action-benchmark` keys charts by the
-  workflow's `name` input. The current workflow embeds the package
-  version in that name, so each measured version becomes its own
-  one-point chart rather than three points on a single
-  release-over-release trend line. A production version of this
-  repository would either use a constant chart name and encode the
-  version into the per-benchmark display name, or switch to a
-  dashboard tool that natively supports a "release" axis.
+- `benchmark-action/github-action-benchmark`'s built-in chart is
+  commit/time-indexed; it has no native option for a "version on X
+  axis" view. The prototype works around this with a small custom
+  page (`dev/bench/by-version.html`) that reads the same `data.js`
+  and renders by package version. A production version of this
+  repository would likely either ship a custom dashboard from the
+  start or pick a tool with a native release-axis concept.
 - Environment metadata (runner image, .NET SDK version, package
   version) is not yet captured alongside each data point. The OTEP
   calls for this so trend breaks caused by environment changes can
