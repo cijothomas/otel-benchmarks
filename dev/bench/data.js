@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779862952611,
+  "lastUpdate": 1779863559667,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -145,6 +145,34 @@ window.BENCHMARK_DATA = {
           {
             "name": "s1_counter_add",
             "value": 1.76104803,
+            "unit": "ns"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "624c73620a2ca31633b749269fedf292a85910af",
+          "message": "Use Criterion for Rust harness (match upstream opentelemetry-rust benches)",
+          "timestamp": "2026-05-27T06:31:34Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/624c73620a2ca31633b749269fedf292a85910af"
+        },
+        "date": 1779863558864,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "s1_counter_add",
+            "value": 1.5562267814443347,
+            "range": "0.0003505950415494689",
             "unit": "ns"
           }
         ]
