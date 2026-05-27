@@ -57,27 +57,51 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "$extra"
 
-      - name: Build result.json from BenchmarkDotNet report
+      - name: Build result.json files from BenchmarkDotNet report
         working-directory: harnesses/dotnet/OtelBenchmarks.Dotnet
         env:
           EXTRA: ${{ steps.meta.outputs.extra }}
         run: |
-          report=$(ls BenchmarkDotNet.Artifacts/results/*-report-full-compressed.json | head -n1)
-          mean_ns=$(jq '.Benchmarks[0].Statistics.Mean' "$report")
-          alloc=$(jq '.Benchmarks[0].Memory.BytesAllocatedPerOperation // 0' "$report")
-          jq -n --arg extra "$EXTRA" --argjson v "$mean_ns" --argjson a "$alloc" \
+          ls BenchmarkDotNet.Artifacts/results/
+          # BenchmarkDotNet writes one JSON per type: <Type>-report-full-compressed.json
+          s1_report=BenchmarkDotNet.Artifacts/results/OtelBenchmarks.Dotnet.S1CounterApiOnly-report-full-compressed.json
+          s1b_report=BenchmarkDotNet.Artifacts/results/OtelBenchmarks.Dotnet.S1bCounterApiOnlyGuarded-report-full-compressed.json
+          # S1
+          s1_mean=$(jq '.Benchmarks[0].Statistics.Mean' "$s1_report")
+          s1_alloc=$(jq '.Benchmarks[0].Memory.BytesAllocatedPerOperation // 0' "$s1_report")
+          jq -n --arg extra "$EXTRA" --argjson v "$s1_mean" --argjson a "$s1_alloc" \
             '[
               {name:"s1_counter_add", unit:"ns", value:$v, extra:$extra},
               {name:"s1_counter_add allocations", unit:"B/op", value:$a, extra:$extra}
-            ]' > result.json
-          cat result.json
+            ]' > result-s1.json
+          cat result-s1.json
+          # S1b
+          s1b_mean=$(jq '.Benchmarks[0].Statistics.Mean' "$s1b_report")
+          s1b_alloc=$(jq '.Benchmarks[0].Memory.BytesAllocatedPerOperation // 0' "$s1b_report")
+          jq -n --arg extra "$EXTRA" --argjson v "$s1b_mean" --argjson a "$s1b_alloc" \
+            '[
+              {name:"s1b_counter_add_guarded", unit:"ns", value:$v, extra:$extra},
+              {name:"s1b_counter_add_guarded allocations", unit:"B/op", value:$a, extra:$extra}
+            ]' > result-s1b.json
+          cat result-s1b.json
 
-      - name: Publish to dashboard
+      - name: Publish S1 to dashboard
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: 'dotnet / S1 (System.Diagnostics.DiagnosticSource ${{ inputs.version }})'
           tool: 'customSmallerIsBetter'
-          output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/result.json
+          output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/result-s1.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: 'dev/bench'
+
+      - name: Publish S1b to dashboard
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: 'dotnet / S1b (System.Diagnostics.DiagnosticSource ${{ inputs.version }})'
+          tool: 'customSmallerIsBetter'
+          output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/result-s1b.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           gh-pages-branch: gh-pages

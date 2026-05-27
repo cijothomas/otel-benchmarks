@@ -8,11 +8,15 @@ Mirrors Scenario S1 in
 - Depends only on the OTel API package; no SDK package is referenced
   or loaded.
 - The benchmark increments a `Counter` instrument by 1 in a tight
-  loop. Each call constructs and passes the same attribute set
-  inline (no hoisting/caching of an attribute container across
-  iterations) — this matches how application code typically issues
-  measurements with per-request attribute values. The attribute set
-  is these three string attributes:
+  loop with **no guard** around the call — the API itself is what
+  short-circuits. See
+  [Scenario S1b](./S1b-counter-api-only-guarded.md) for the
+  `IsEnabled`-guarded variant.
+- Each call constructs and passes the same attribute set inline (no
+  hoisting/caching of an attribute container across iterations) —
+  this matches how application code typically issues measurements
+  with per-request attribute values. The attribute set is these
+  three string attributes:
   - `http.request.method` = `"GET"`
   - `url.scheme` = `"https"`
   - `server.address` = `"example.com"`

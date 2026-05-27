@@ -7,8 +7,12 @@ a personal account and is **not** an official OpenTelemetry project.
 
 ## What it contains
 
-- A scenario definition: [`scenarios/S1-counter-api-only.md`](scenarios/S1-counter-api-only.md).
-- Language harnesses for that scenario:
+- Scenario definitions:
+  - [`scenarios/S1-counter-api-only.md`](scenarios/S1-counter-api-only.md) —
+    bare `Counter.Add` against the no-op API.
+  - [`scenarios/S1b-counter-api-only-guarded.md`](scenarios/S1b-counter-api-only-guarded.md) —
+    same workload, guarded with the API's `IsEnabled` check.
+- Language harnesses:
   - [`harnesses/dotnet/`](harnesses/dotnet/) — `System.Diagnostics.DiagnosticSource`, BenchmarkDotNet.
   - [`harnesses/rust/`](harnesses/rust/) — `opentelemetry` crate, Criterion.
   - [`harnesses/java/`](harnesses/java/) — `opentelemetry-api`, JMH.
