@@ -8,9 +8,10 @@ a personal account and is **not** an official OpenTelemetry project.
 ## What it contains
 
 - A scenario definition: [`scenarios/S1-counter-api-only.md`](scenarios/S1-counter-api-only.md).
-- A .NET harness for that scenario:
-  [`harnesses/dotnet/`](harnesses/dotnet/).
-- A manual-dispatch GitHub Actions workflow that runs the harness on
+- Language harnesses for that scenario:
+  - [`harnesses/dotnet/`](harnesses/dotnet/) — `System.Diagnostics.DiagnosticSource`.
+  - [`harnesses/rust/`](harnesses/rust/) — `opentelemetry` crate, API-only.
+- A manual-dispatch GitHub Actions workflow that runs a harness on
   a specified package version and appends the result to a GitHub
   Pages dashboard:
   [`.github/workflows/run-benchmark.yml`](.github/workflows/run-benchmark.yml).
@@ -20,11 +21,11 @@ a personal account and is **not** an official OpenTelemetry project.
 <https://cijothomas.github.io/otel-benchmarks/>
 
 X axis is the measured package version; Y axis is the value reported
-by the harness. Current data: three points for Scenario S1 against
-`System.Diagnostics.DiagnosticSource` versions `10.0.8`, `9.0.16`,
-and `8.0.1`, measured on `ubuntu-latest`. All three measure
-`Counter.Add` in the sub-nanosecond / low-nanosecond range with no
-heap allocations.
+by the harness. Current data: Scenario S1 against
+`System.Diagnostics.DiagnosticSource` `10.0.8`/`9.0.16`/`8.0.1` and
+`opentelemetry` (Rust) `0.32.0`/`0.31.0`/`0.30.0`, measured on
+`ubuntu-latest`. All measure `Counter.add` in the sub- to
+low-nanosecond range.
 
 ## What this is not
 
@@ -51,6 +52,6 @@ heap allocations.
 
 Trigger the
 [`run-benchmark`](../../actions/workflows/run-benchmark.yml) workflow,
-supplying the language (`dotnet`) and the package version to measure
-(e.g. `10.0.8`). The workflow will push the new data point to the
-`gh-pages` branch.
+supplying the language (`dotnet` or `rust`) and the package version
+to measure (e.g. `10.0.8`, `0.32.0`). The workflow will push the new
+data point to the `gh-pages` branch.

@@ -33,3 +33,15 @@ SDK registered. The version recorded against each data point is the
 
 See [`harnesses/dotnet/`](../harnesses/dotnet/) for the
 implementation.
+
+## Rust interpretation
+
+In Rust, the API lives in the
+[`opentelemetry`](https://crates.io/crates/opentelemetry) crate; the
+SDK is a separate crate (`opentelemetry_sdk`). "API-only" means:
+depend on `opentelemetry` only, with no SDK registered, so
+`global::meter(...)` returns the crate's NoOp meter. The version
+recorded against each data point is the `opentelemetry` crate
+version. Allocations are not reported in the Rust harness.
+
+See [`harnesses/rust/`](../harnesses/rust/) for the implementation.

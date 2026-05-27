@@ -10,8 +10,9 @@ on:
         default: dotnet
         options:
           - dotnet
+          - rust
       version:
-        description: 'Package version to measure (e.g. 10.0.8 for System.Diagnostics.DiagnosticSource)'
+        description: 'Package version to measure (e.g. 10.0.8 for System.Diagnostics.DiagnosticSource, 0.32.0 for opentelemetry)'
         required: true
         type: string
         default: '10.0.8'
@@ -53,6 +54,39 @@ jobs:
           name: 'dotnet / S1 (System.Diagnostics.DiagnosticSource ${{ inputs.version }})'
           tool: 'benchmarkdotnet'
           output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/${{ steps.locate.outputs.report }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: 'dev/bench'
+
+  rust:
+    if: inputs.language == 'rust'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Pin opentelemetry version
+        working-directory: harnesses/rust
+        run: |
+          sed -i 's|^opentelemetry = .*|opentelemetry = "${{ inputs.version }}"|' Cargo.toml
+          grep '^opentelemetry' Cargo.toml
+
+      - name: Build and run benchmark
+        working-directory: harnesses/rust
+        run: |
+          cargo build --release
+          ./target/release/otel-rust-bench > result.json
+          cat result.json
+
+      - name: Publish to dashboard
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: 'rust / S1 (opentelemetry ${{ inputs.version }})'
+          tool: 'customSmallerIsBetter'
+          output-file-path: harnesses/rust/result.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           gh-pages-branch: gh-pages
