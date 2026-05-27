@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779862855521,
+  "lastUpdate": 1779862918719,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -116,6 +116,35 @@ window.BENCHMARK_DATA = {
           {
             "name": "s1_counter_add",
             "value": 1.76464344,
+            "unit": "ns"
+          }
+        ]
+      }
+    ],
+    "rust / S1 (opentelemetry 0.30.0)": [
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "b223f0ccfcbffa562ddad788d2fb32ee4219b788",
+          "message": "Restore Cargo.toml before publish to avoid dirty worktree",
+          "timestamp": "2026-05-27T06:21:31Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/b223f0ccfcbffa562ddad788d2fb32ee4219b788"
+        },
+        "date": 1779862918380,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "s1_counter_add",
+            "value": 1.76104803,
             "unit": "ns"
           }
         ]
