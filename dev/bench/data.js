@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779865639414,
+  "lastUpdate": 1779897143660,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -616,6 +616,37 @@ window.BENCHMARK_DATA = {
             "range": "0.005972490578910589",
             "unit": "ns",
             "extra": "runner=ubuntu24\nruntime=rustc 1.95.0 (59807616e 2026-04-14)\ncpu=AMD EPYC 7763 64-Core Processor\nkernel=6.17.0-1013-azure\nframework=Criterion 0.5"
+          }
+        ]
+      }
+    ],
+    "java / S1 (opentelemetry-api 1.51.0)": [
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "744e5a64ad4aab1c937ab9d8fa7bc2753292dde8",
+          "message": "Add Java harness for Scenario S1 (JMH + opentelemetry-api)",
+          "timestamp": "2026-05-27T15:51:11Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/744e5a64ad4aab1c937ab9d8fa7bc2753292dde8"
+        },
+        "date": 1779897143086,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "s1_counter_add",
+            "value": 115.54952691751771,
+            "range": "0.9266439048967378",
+            "unit": "ns",
+            "extra": "runner=ubuntu24\nruntime=openjdk version 17.0.19 2026-04-21\ncpu=AMD EPYC 7763 64-Core Processor\nkernel=6.17.0-1013-azure\nframework=JMH"
           }
         ]
       }
