@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779863689401,
+  "lastUpdate": 1779864406611,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -28,6 +28,34 @@ window.BENCHMARK_DATA = {
             "value": 0.9968569407860438,
             "unit": "ns",
             "range": "± 0.010514508485295941"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "8b31bbe0aa23134fd5cedbbed6a45c41babc0fcf",
+          "message": "Pass attributes per call in both harnesses\n\nMatch how application code typically issues measurements: construct\nthe KeyValuePair/KeyValue tuple at the Add/add call site rather than\nhoisting a static container outside the hot loop. Matches typical\nreal-world usage where attribute values come from per-request data.",
+          "timestamp": "2026-05-27T06:45:25Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/8b31bbe0aa23134fd5cedbbed6a45c41babc0fcf"
+        },
+        "date": 1779864406328,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "OtelBenchmarks.Dotnet.S1CounterApiOnly.CounterAdd",
+            "value": 3.4104531835764647,
+            "unit": "ns",
+            "range": "± 0.0034312846346188884"
           }
         ]
       }
