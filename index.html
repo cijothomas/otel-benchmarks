@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>otel-benchmarks</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { margin-bottom: 0.25rem; }
+  .sub { color: #666; margin-top: 0; }
+  .scenario { margin-top: 2rem; }
+  canvas { max-width: 100%; }
+  table { border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; }
+  th, td { border: 1px solid #ddd; padding: 4px 8px; text-align: left; }
+  th { background: #f5f5f5; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="./dev/bench/data.js"></script>
+</head>
+<body>
+<h1>otel-benchmarks</h1>
+<p class="sub">
+  Prototype dashboard for
+  <a href="https://github.com/open-telemetry/opentelemetry-specification/pull/5109">OTEP 5109</a>.
+  X axis: package version under test. Y axis: measured value.
+  <a href="https://github.com/cijothomas/otel-benchmarks">Source</a>.
+</p>
+
+<div id="charts"></div>
+
+<script>
+(function () {
+  const data = window.BENCHMARK_DATA;
+  const root = document.getElementById('charts');
+  if (!data || !data.entries) { root.textContent = 'No data loaded.'; return; }
+
+  // Entry names look like: "dotnet / S1 (System.Diagnostics.DiagnosticSource X.Y.Z)".
+  // Parse the version off the end and use the leading part as the scenario key.
+  const versionRe = /\s*\(.*?([\d]+\.[\d]+\.[\d]+)\)\s*$/;
+  const grouped = new Map();
+  for (const [entryName, runs] of Object.entries(data.entries)) {
+    const m = entryName.match(versionRe);
+    if (!m) continue;
+    const version = m[1];
+    const scenarioKey = entryName.replace(versionRe, '').trim();
+    const latest = runs[runs.length - 1];
+    for (const bench of latest.benches) {
+      const key = scenarioKey + ' :: ' + bench.name;
+      if (!grouped.has(key)) {
+        grouped.set(key, { scenario: scenarioKey, bench: bench.name, unit: bench.unit, points: [] });
+      }
+      grouped.get(key).points.push({ version, value: bench.value, range: bench.range });
+    }
+  }
+
+  const cmp = (a, b) => {
+    const pa = a.split('.').map(Number), pb = b.split('.').map(Number);
+    for (let i = 0; i < 3; i++) if (pa[i] !== pb[i]) return pa[i] - pb[i];
+    return 0;
+  };
+
+  for (const s of grouped.values()) {
+    s.points.sort((a, b) => cmp(a.version, b.version));
+    const section = document.createElement('section');
+    section.className = 'scenario';
+    section.innerHTML = '<h2>' + s.scenario + '</h2><p><code>' + s.bench + '</code> &mdash; unit: ' + s.unit + '</p>';
+    const canvas = document.createElement('canvas');
+    canvas.height = 260;
+    section.appendChild(canvas);
+    const tbl = document.createElement('table');
+    tbl.innerHTML = '<thead><tr><th>Version</th><th>' + s.unit + '</th><th>Range</th></tr></thead>';
+    const tb = document.createElement('tbody');
+    for (const p of s.points) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + p.version + '</td><td>' + p.value.toFixed(4) + '</td><td>' + (p.range || '') + '</td>';
+      tb.appendChild(tr);
+    }
+    tbl.appendChild(tb);
+    section.appendChild(tbl);
+    root.appendChild(section);
+
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: s.points.map(p => p.version),
+        datasets: [{
+          label: s.bench + ' (' + s.unit + ')',
+          data: s.points.map(p => p.value),
+          borderColor: '#3366cc',
+          backgroundColor: 'rgba(51, 102, 204, 0.15)',
+          tension: 0.1,
+          pointRadius: 5,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { title: { display: true, text: 'Package version' } },
+          y: { beginAtZero: true, title: { display: true, text: s.unit } },
+        },
+        plugins: { legend: { display: false } },
+      },
+    });
+  }
+})();
+</script>
+</body>
+</html>
