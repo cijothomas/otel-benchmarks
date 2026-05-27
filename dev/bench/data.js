@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779865519740,
+  "lastUpdate": 1779865579187,
   "repoUrl": "https://github.com/cijothomas/otel-benchmarks",
   "entries": {
     "dotnet / S1 (System.Diagnostics.DiagnosticSource 10.0.8)": [
@@ -558,6 +558,35 @@ window.BENCHMARK_DATA = {
             "value": 15.475316986842714,
             "range": "0.002364137114783632",
             "unit": "ns"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "cijothomas",
+            "username": "cijothomas",
+            "email": "cijothomas@users.noreply.github.com"
+          },
+          "id": "7fe8e585c412eba96f75c8d83f6b9c79c925e66c",
+          "message": "Capture per-datapoint environment metadata via 'extra' field\n\n- Both jobs collect runner image, runtime version, CPU model, kernel,\n  and benchmarking framework version into the customSmallerIsBetter\n  'extra' string.\n- .NET publish path now mirrors Rust: post-process the framework's\n  native JSON (BenchmarkDotNet report / Criterion estimates) into the\n  same customSmallerIsBetter shape so both languages flow through one\n  schema.\n- Dashboard renders the 'extra' block as an Environment column in\n  each scenario table and in the Chart.js tooltip.",
+          "timestamp": "2026-05-27T07:00:42Z",
+          "url": "https://github.com/cijothomas/otel-benchmarks/commit/7fe8e585c412eba96f75c8d83f6b9c79c925e66c"
+        },
+        "date": 1779865578858,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "s1_counter_add",
+            "value": 11.844579494615246,
+            "range": "0.005972490578910589",
+            "unit": "ns",
+            "extra": "runner=ubuntu24\nruntime=rustc 1.95.0 (59807616e 2026-04-14)\ncpu=AMD EPYC 7763 64-Core Processor\nkernel=6.17.0-1013-azure\nframework=Criterion 0.5"
           }
         ]
       }
