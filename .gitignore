@@ -4,3 +4,5 @@ BenchmarkDotNet.Artifacts/
 *.user
 target/
 Cargo.lock
+.gradle/
+build/

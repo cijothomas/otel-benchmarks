@@ -61,3 +61,15 @@ recorded against each data point is the `opentelemetry` crate
 version. Allocations are not reported in the Rust harness.
 
 See [`harnesses/rust/`](../harnesses/rust/) for the implementation.
+
+## Java interpretation
+
+In Java, the API lives in the
+[`opentelemetry-api`](https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-api)
+artifact; the SDK is `opentelemetry-sdk`. "API-only" means: depend
+on `opentelemetry-api` only, with no SDK registered, so
+`GlobalOpenTelemetry.getMeter(...)` returns the API's no-op meter.
+The version recorded against each data point is the
+`opentelemetry-api` artifact version.
+
+See [`harnesses/java/`](../harnesses/java/) for the implementation.

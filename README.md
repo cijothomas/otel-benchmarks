@@ -9,8 +9,9 @@ a personal account and is **not** an official OpenTelemetry project.
 
 - A scenario definition: [`scenarios/S1-counter-api-only.md`](scenarios/S1-counter-api-only.md).
 - Language harnesses for that scenario:
-  - [`harnesses/dotnet/`](harnesses/dotnet/) — `System.Diagnostics.DiagnosticSource`.
-  - [`harnesses/rust/`](harnesses/rust/) — `opentelemetry` crate, API-only.
+  - [`harnesses/dotnet/`](harnesses/dotnet/) — `System.Diagnostics.DiagnosticSource`, BenchmarkDotNet.
+  - [`harnesses/rust/`](harnesses/rust/) — `opentelemetry` crate, Criterion.
+  - [`harnesses/java/`](harnesses/java/) — `opentelemetry-api`, JMH.
 - A manual-dispatch GitHub Actions workflow that runs a harness on
   a specified package version and appends the result to a GitHub
   Pages dashboard:
@@ -52,6 +53,6 @@ low-nanosecond range.
 
 Trigger the
 [`run-benchmark`](../../actions/workflows/run-benchmark.yml) workflow,
-supplying the language (`dotnet` or `rust`) and the package version
-to measure (e.g. `10.0.8`, `0.32.0`). The workflow will push the new
-data point to the `gh-pages` branch.
+supplying the language (`dotnet`, `rust`, or `java`) and the
+package version to measure (e.g. `10.0.8`, `0.32.0`, `1.51.0`). The
+workflow will push the new data point to the `gh-pages` branch.

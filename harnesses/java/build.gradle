@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'me.champeau.jmh' version '0.7.2'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def otelApiVersion = project.findProperty('otelApiVersion') ?: '1.51.0'
+
+dependencies {
+    jmh "io.opentelemetry:opentelemetry-api:${otelApiVersion}"
+}
+
+jmh {
+    warmupIterations = 3
+    iterations = 5
+    fork = 1
+    timeOnIteration = '2s'
+    warmup = '1s'
+    resultFormat = 'JSON'
+    resultsFile = project.file("$buildDir/results/jmh/result.json")
+    benchmarkMode = ['avgt']
+    timeUnit = 'ns'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}

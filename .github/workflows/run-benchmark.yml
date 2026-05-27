@@ -11,8 +11,9 @@ on:
         options:
           - dotnet
           - rust
+          - java
       version:
-        description: 'Package version to measure (e.g. 10.0.8 for System.Diagnostics.DiagnosticSource, 0.32.0 for opentelemetry)'
+        description: 'Package version to measure (e.g. 10.0.8 for System.Diagnostics.DiagnosticSource, 0.32.0 for opentelemetry, 1.51.0 for opentelemetry-api)'
         required: true
         type: string
         default: '10.0.8'
@@ -138,6 +139,64 @@ jobs:
           name: 'rust / S1 (opentelemetry ${{ inputs.version }})'
           tool: 'customSmallerIsBetter'
           output-file-path: harnesses/rust/result.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: 'dev/bench'
+
+  java:
+    if: inputs.language == 'java'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run JMH benchmark
+        working-directory: harnesses/java
+        run: |
+          gradle jmh -PotelApiVersion=${{ inputs.version }} --no-daemon
+
+      - name: Collect environment metadata
+        id: meta
+        run: |
+          image="${ImageOS:-${{ runner.os }}}"
+          runtime="$(java -version 2>&1 | head -n1 | tr -d '"')"
+          cpu=$(grep -m1 'model name' /proc/cpuinfo | sed 's/.*: //')
+          kernel=$(uname -r)
+          extra=$(printf 'runner=%s\nruntime=%s\ncpu=%s\nkernel=%s\nframework=JMH' \
+            "$image" "$runtime" "$cpu" "$kernel")
+          {
+            echo 'extra<<__END__'
+            echo "$extra"
+            echo '__END__'
+          } >> "$GITHUB_OUTPUT"
+          echo "$extra"
+
+      - name: Convert JMH result to dashboard JSON
+        working-directory: harnesses/java
+        env:
+          EXTRA: ${{ steps.meta.outputs.extra }}
+        run: |
+          score=$(jq '.[0].primaryMetric.score' build/results/jmh/result.json)
+          error=$(jq '.[0].primaryMetric.scoreError' build/results/jmh/result.json)
+          jq -n --arg extra "$EXTRA" --argjson v "$score" --argjson r "$error" \
+            '[{name:"s1_counter_add", unit:"ns", value:$v, range:$r, extra:$extra}]' > result.json
+          cat result.json
+
+      - name: Publish to dashboard
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: 'java / S1 (opentelemetry-api ${{ inputs.version }})'
+          tool: 'customSmallerIsBetter'
+          output-file-path: harnesses/java/result.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           gh-pages-branch: gh-pages
