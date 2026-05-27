@@ -40,20 +40,43 @@ jobs:
             -p:SystemDiagnosticsDiagnosticSourceVersion=${{ inputs.version }} \
             -- --exporters json --filter '*'
 
-      - name: Locate report
-        id: locate
+      - name: Collect environment metadata
+        id: meta
+        run: |
+          image="${ImageOS:-${{ runner.os }}}"
+          runtime=".NET $(dotnet --version)"
+          cpu=$(grep -m1 'model name' /proc/cpuinfo | sed 's/.*: //')
+          kernel=$(uname -r)
+          extra=$(printf 'runner=%s\nruntime=%s\ncpu=%s\nkernel=%s\nframework=BenchmarkDotNet 0.14.0' \
+            "$image" "$runtime" "$cpu" "$kernel")
+          {
+            echo 'extra<<__END__'
+            echo "$extra"
+            echo '__END__'
+          } >> "$GITHUB_OUTPUT"
+          echo "$extra"
+
+      - name: Build result.json from BenchmarkDotNet report
         working-directory: harnesses/dotnet/OtelBenchmarks.Dotnet
+        env:
+          EXTRA: ${{ steps.meta.outputs.extra }}
         run: |
           report=$(ls BenchmarkDotNet.Artifacts/results/*-report-full-compressed.json | head -n1)
-          echo "report=$report" >> "$GITHUB_OUTPUT"
-          echo "Found report: $report"
+          mean_ns=$(jq '.Benchmarks[0].Statistics.Mean' "$report")
+          alloc=$(jq '.Benchmarks[0].Memory.BytesAllocatedPerOperation // 0' "$report")
+          jq -n --arg extra "$EXTRA" --argjson v "$mean_ns" --argjson a "$alloc" \
+            '[
+              {name:"s1_counter_add", unit:"ns", value:$v, extra:$extra},
+              {name:"s1_counter_add allocations", unit:"B/op", value:$a, extra:$extra}
+            ]' > result.json
+          cat result.json
 
       - name: Publish to dashboard
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: 'dotnet / S1 (System.Diagnostics.DiagnosticSource ${{ inputs.version }})'
-          tool: 'benchmarkdotnet'
-          output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/${{ steps.locate.outputs.report }}
+          tool: 'customSmallerIsBetter'
+          output-file-path: harnesses/dotnet/OtelBenchmarks.Dotnet/result.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           gh-pages-branch: gh-pages
@@ -79,13 +102,31 @@ jobs:
         run: |
           cargo bench --bench s1_counter -- --output-format bencher | tee bench.txt
 
+      - name: Collect environment metadata
+        id: meta
+        run: |
+          image="${ImageOS:-${{ runner.os }}}"
+          runtime=$(rustc --version)
+          cpu=$(grep -m1 'model name' /proc/cpuinfo | sed 's/.*: //')
+          kernel=$(uname -r)
+          extra=$(printf 'runner=%s\nruntime=%s\ncpu=%s\nkernel=%s\nframework=Criterion 0.5' \
+            "$image" "$runtime" "$cpu" "$kernel")
+          {
+            echo 'extra<<__END__'
+            echo "$extra"
+            echo '__END__'
+          } >> "$GITHUB_OUTPUT"
+          echo "$extra"
+
       - name: Convert Criterion estimates to dashboard JSON
         working-directory: harnesses/rust
+        env:
+          EXTRA: ${{ steps.meta.outputs.extra }}
         run: |
           mean_ns=$(jq '.mean.point_estimate' target/criterion/s1_counter_add/new/estimates.json)
           stderr_ns=$(jq '.mean.standard_error' target/criterion/s1_counter_add/new/estimates.json)
-          jq -n --argjson v "$mean_ns" --argjson r "$stderr_ns" \
-            '[{name:"s1_counter_add", unit:"ns", value:$v, range:$r}]' > result.json
+          jq -n --arg extra "$EXTRA" --argjson v "$mean_ns" --argjson r "$stderr_ns" \
+            '[{name:"s1_counter_add", unit:"ns", value:$v, range:$r, extra:$extra}]' > result.json
           cat result.json
 
       - name: Restore Cargo.toml

@@ -24,6 +24,19 @@ Mirrors Scenario S1 in
   - `allocations/op` (heap allocations per operation), where the
     language exposes it; bytes/op optional.
 
+## Per-data-point metadata
+
+Each data point is published with an `extra` field carrying the
+execution environment in `key=value` pairs, one per line:
+
+- `runner` — GitHub Actions runner image label
+- `runtime` — language runtime version (`.NET 8.0.x`, `rustc 1.x.y`)
+- `cpu` — `model name` from `/proc/cpuinfo`
+- `kernel` — `uname -r`
+- `framework` — benchmarking framework name and version
+
+This is rendered next to each value in the dashboard table.
+
 ## .NET interpretation
 
 In .NET, the metrics API is in the BCL
