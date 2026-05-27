@@ -74,11 +74,18 @@ jobs:
           sed -i 's|^opentelemetry = .*|opentelemetry = "${{ inputs.version }}"|' Cargo.toml
           grep '^opentelemetry' Cargo.toml
 
-      - name: Build and run benchmark
+      - name: Run Criterion benchmark
         working-directory: harnesses/rust
         run: |
-          cargo build --release
-          ./target/release/otel-rust-bench > result.json
+          cargo bench --bench s1_counter -- --output-format bencher | tee bench.txt
+
+      - name: Convert Criterion estimates to dashboard JSON
+        working-directory: harnesses/rust
+        run: |
+          mean_ns=$(jq '.mean.point_estimate' target/criterion/s1_counter_add/new/estimates.json)
+          stderr_ns=$(jq '.mean.standard_error' target/criterion/s1_counter_add/new/estimates.json)
+          jq -n --argjson v "$mean_ns" --argjson r "$stderr_ns" \
+            '[{name:"s1_counter_add", unit:"ns", value:$v, range:$r}]' > result.json
           cat result.json
 
       - name: Restore Cargo.toml
