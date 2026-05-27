@@ -17,12 +17,10 @@ a personal account and is **not** an official OpenTelemetry project.
 
 ## Live dashboard
 
-- Release-over-release (version on X axis):
-  <https://cijothomas.github.io/otel-benchmarks/dev/bench/by-version.html>
-- Commit-indexed (the default `github-action-benchmark` view):
-  <https://cijothomas.github.io/otel-benchmarks/dev/bench/>
+<https://cijothomas.github.io/otel-benchmarks/>
 
-Current data: three points for Scenario S1 against
+X axis is the measured package version; Y axis is the value reported
+by the harness. Current data: three points for Scenario S1 against
 `System.Diagnostics.DiagnosticSource` versions `10.0.8`, `9.0.16`,
 and `8.0.1`, measured on `ubuntu-latest`. All three measure
 `Counter.Add` in the sub-nanosecond / low-nanosecond range with no
@@ -41,11 +39,9 @@ heap allocations.
 
 - `benchmark-action/github-action-benchmark`'s built-in chart is
   commit/time-indexed; it has no native option for a "version on X
-  axis" view. The prototype works around this with a small custom
-  page (`dev/bench/by-version.html`) that reads the same `data.js`
-  and renders by package version. A production version of this
-  repository would likely either ship a custom dashboard from the
-  start or pick a tool with a native release-axis concept.
+  axis" view. This prototype ignores that chart and ships a small
+  custom `index.html` at the gh-pages root which reads the same
+  `data.js` and renders by package version.
 - Environment metadata (runner image, .NET SDK version, package
   version) is not yet captured alongside each data point. The OTEP
   calls for this so trend breaks caused by environment changes can
